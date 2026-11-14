@@ -64,3 +64,60 @@ def song(dynamic=True, exact_repeat=True, seed=0):
     if not dynamic:
         y = np.tanh(3 * y) / 3  # squash it
     return (0.9 * y / np.max(np.abs(y))).astype(np.float32)
+
+
+def _hit(n, f0, decay, rng, noise=0.3):
+    t = np.arange(n) / SR
+    return (np.sin(2 * np.pi * f0 * t) + noise * rng.standard_normal(n)) * np.exp(-t * decay)
+
+
+def bgm(drop=True, seed=1, bpm=140, drop_at=28.5):
+    """Mass-entry style cue: drone intro, accelerating build, 0.5 s silence, loud drop with sub bass.
+    drop=False gives the same material at one flat level with no pause."""
+    rng = np.random.default_rng(seed)
+    beat = 60 / bpm
+    total = drop_at + 20.0 + 4.0
+    y = np.zeros(int(total * SR))
+    t_all = np.arange(len(y)) / SR
+
+    def add(at, sig, gain):
+        i = int(at * SR)
+        j = min(len(y), i + len(sig))
+        if i < len(y):
+            y[i:j] += gain * sig[: j - i]
+
+    build_start, pause = 8.0, 0.5
+    # drone through intro + build
+    drone = 0.05 * np.sin(2 * np.pi * 55 * t_all) * (t_all < drop_at - pause)
+    y += drone if drop else 0.0
+    # intro: sparse low toms
+    for k in np.arange(0.0, build_start, beat * 2):
+        add(k, _hit(int(0.3 * SR), 90, 12, rng), 0.15 if drop else 0.6)
+    # build: hits accelerating and getting louder, plus a noise riser
+    k = build_start
+    while k < drop_at - pause:
+        prog = (k - build_start) / (drop_at - pause - build_start)
+        add(k, _hit(int(0.2 * SR), 140, 20, rng), (0.12 + 0.45 * prog) if drop else 0.6)
+        k += beat * (1.0 - 0.75 * prog)
+    if drop:
+        rm = (t_all >= build_start) & (t_all < drop_at - pause)
+        y[rm] += rng.standard_normal(rm.sum()) * 0.08 * ((t_all[rm] - build_start) / (drop_at - pause - build_start)) ** 2
+    # drop: kick + sub on beats, dense 16th percussion, brass-like stabs
+    k = drop_at if drop else 0.0
+    end = drop_at + 20.0
+    g = 1.0 if drop else 0.6
+    while k < end:
+        add(k, _hit(int(0.5 * SR), 45, 4, rng, noise=0.05), 0.9 * g)
+        for s in range(4):
+            add(k + s * beat / 4, _hit(int(0.08 * SR), 300, 60, rng, noise=1.0), 0.25 * g)
+        if int((k - drop_at) / beat) % 2 == 1:
+            n = int(0.15 * SR)
+            tt = np.arange(n) / SR
+            add(k + beat / 2, sum(np.sin(2 * np.pi * f * h * tt) / h for f in (233, 294, 349) for h in (1, 2, 3)) * np.exp(-tt * 8), 0.12 * g)
+        k += beat
+    if not drop:  # flat: no silence, constant bed
+        y += 0.05 * np.sin(2 * np.pi * 55 * t_all)
+    # outro decay
+    y += 0.0
+    y += rng.standard_normal(len(y)) * 0.001
+    return (0.9 * y / np.max(np.abs(y))).astype(np.float32)

@@ -158,7 +158,8 @@ def describe(y_hi, sections, style="", key=None, remember=True):
     if remember and key:
         add_to_reference(key, song)
     return {"top": top, "style_adherence": adherence, "per_section": per_section,
-            "reference_songs": len(_load_reference()) - (1 if remember and key else 0)}
+            "reference_songs": len(_load_reference()) - (1 if remember and key else 0),
+            "embedding": [round(float(x), 5) for x in song]}
 
 
 def report_lines(d):

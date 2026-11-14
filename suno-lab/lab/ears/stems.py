@@ -107,3 +107,16 @@ def arrangement_summary(per_section, sections, active_db=-30.0):
             else:
                 notes.append(f"{name}: always on, level varies by {spread:.1f} dB")
     return notes
+
+
+def arc(times, curves, drop_t, intro_s=8.0, drop_s=8.0):
+    """Each stem's level (dB vs its own peak) in the intro and in the drop."""
+    out = {}
+    for name, c in curves.items():
+        n = min(len(times), len(c))
+        t, c = times[:n], c[:n]
+        intro = c[t < intro_s]
+        drop = c[(t >= drop_t) & (t < drop_t + drop_s)]
+        out[name] = {"intro": round(float(np.mean(intro)), 1) if intro.size else None,
+                     "drop": round(float(np.mean(drop)), 1) if drop.size else None}
+    return out

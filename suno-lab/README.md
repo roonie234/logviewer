@@ -55,6 +55,27 @@ listener, not songs tuned to slip past AI-content labelling.
 Humanness signals are heuristics, shown with their evidence, not verdicts. Their weights live in
 `playbook/weights.yaml` (create it to override) and get calibrated against your ratings.
 
+## BGM mode (instrumental film cues)
+Set `kind: bgm` in the brief (see `lab/brief.py` for the full example). `sections` becomes the
+arrangement - `[Intro: ...] [Build: ...] [Silence: 1 beat] [Drop: ...] [Outro: ...] [End]` - and
+the prompt's Lyrics box holds only those tags (or, with `instrumental_method: toggle`, the
+arrangement is folded into the Style and Suno's Instrumental switch is on).
+
+- **Lint** checks build -> pause -> drop, a designed ending, named Indian percussion, one
+  electronic layer, and flags artist names (Suno filters them - describe the sound instead).
+- **Impact** (`lab/features/bgm.py`): drop time and lift, build length/slope, the breath before the
+  drop, hits per second, sub-bass share, and (with `--ears`) the drums/bass arc intro -> drop.
+- **Scoring** becomes "Impact & life": vocal/grid signals are off, `weak_drop` and contrast count most.
+
+### Reference profiles
+Put reference tracks you own in `references/<name>/` (git-ignored; they never go to Suno) and:
+```
+python -m lab profile build mass-hero references/mass-hero --ears
+python -m lab analyze sessions/<cue>/v1 --kind bgm --profile mass-hero --ears
+```
+The profile keeps only numbers (10th-90th percentile ranges and a CLAP sound centroid), so the
+report can say e.g. "drop lift 3 dB, references 7-11 dB" and how close the cue's sound is.
+
 ## The playbook
 `playbook/techniques.yaml` holds every prompt technique with a status:
 **lore** (untested) -> **testing** -> **proven** / **busted**. Each brief lists the 1-2

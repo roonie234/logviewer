@@ -5,6 +5,8 @@
   python -m lab lint     sessions/<song>/v1 | --text "lyrics" --style "..."
   python -m lab analyze  sessions/<song>/v1 [--ears]              -> report.md, metrics.json, plots/
   python -m lab rate     sessions/<song>/v1 a=4 b=2 [--note "..."] log ratings, update playbook
+  python -m lab profile  build mass-hero references/mass-hero [--ears]   measure reference tracks -> profile
+  python -m lab analyze  sessions/<cue>/v1 --kind bgm --profile mass-hero [--ears]
   python -m lab cheatsheet                                        playbook -> CHEATSHEET.md
 """
 
@@ -54,7 +56,7 @@ def cmd_lint(a):
 
 
 def cmd_analyze(a):
-    results = analyze.analyze_version(a.version_dir, ears=a.ears)
+    results = analyze.analyze_version(a.version_dir, ears=a.ears, kind=a.kind, profile_name=a.profile)
     for label, m in results.items():
         print(f"[{label}] humanness {m['humanness']['score']}/100, {m['basics']['bpm']} BPM, "
               f"{m['basics']['key']} {m['basics']['mode']}, {len(m['structure']['sections'])} sections")
@@ -73,6 +75,18 @@ def cmd_rate(a):
     print("logged.")
 
 
+def cmd_profile(a):
+    from . import profile
+    if a.action == "show":
+        print(profile.show(a.name))
+        return
+    if not a.ref_dir:
+        raise SystemExit("usage: python -m lab profile build <name> <reference-folder> [--ears]")
+    path, prof = profile.build(a.name, a.ref_dir, ears=a.ears)
+    print(profile.show(a.name))
+    print(f"saved {path}")
+
+
 def cmd_cheatsheet(a):
     print(cheatsheet.build())
 
@@ -83,7 +97,8 @@ def main(argv=None):
     s = sub.add_parser("fetch"); s.add_argument("version_dir"); s.add_argument("links", nargs="+"); s.set_defaults(fn=cmd_fetch)
     s = sub.add_parser("prompt"); s.add_argument("version_dir"); s.set_defaults(fn=cmd_prompt)
     s = sub.add_parser("lint"); s.add_argument("version_dir", nargs="?"); s.add_argument("--text"); s.add_argument("--style"); s.add_argument("--exclude"); s.set_defaults(fn=cmd_lint)
-    s = sub.add_parser("analyze"); s.add_argument("version_dir"); s.add_argument("--ears", action="store_true", help="also run stem separation, sung-lyric transcription, CLAP description, vocal pitch (needs requirements-ears.txt)"); s.set_defaults(fn=cmd_analyze)
+    s = sub.add_parser("analyze"); s.add_argument("version_dir"); s.add_argument("--ears", action="store_true", help="also run stem separation, sung-lyric transcription, CLAP description, vocal pitch (needs requirements-ears.txt)"); s.add_argument("--kind", choices=["song", "bgm"], help="override the brief's kind"); s.add_argument("--profile", help="compare with a reference profile, e.g. mass-hero"); s.set_defaults(fn=cmd_analyze)
+    s = sub.add_parser("profile"); s.add_argument("action", choices=["build", "show"]); s.add_argument("name"); s.add_argument("ref_dir", nargs="?"); s.add_argument("--ears", action="store_true"); s.set_defaults(fn=cmd_profile)
     s = sub.add_parser("rate"); s.add_argument("version_dir"); s.add_argument("ratings", nargs="+"); s.add_argument("--note"); s.set_defaults(fn=cmd_rate)
     s = sub.add_parser("cheatsheet"); s.set_defaults(fn=cmd_cheatsheet)
     a = p.parse_args(argv)

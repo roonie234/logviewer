@@ -20,14 +20,20 @@ def _mmss(t):
     return f"{int(t // 60)}:{int(t % 60):02d}"
 
 
-def weights():
-    if WEIGHTS_FILE.exists():
-        return {**humanness.WEIGHTS, **(yaml.safe_load(WEIGHTS_FILE.read_text()) or {})}
-    return humanness.WEIGHTS
+def weights(kind="song"):
+    base = humanness.BGM_WEIGHTS if kind == "bgm" else humanness.WEIGHTS
+    if not WEIGHTS_FILE.exists():
+        return base
+    data = yaml.safe_load(WEIGHTS_FILE.read_text()) or {}
+    if kind in data or "song" in data or "bgm" in data:  # per-kind file
+        return {**base, **(data.get(kind) or {})}
+    return {**base, **data} if kind == "song" else base  # legacy flat file = song weights
 
 
-def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", ears=False):
+def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", ears=False,
+                 kind=None, remember=True, stems_dir=None, profile=None):
     clip = clip or {}
+    kind = kind or (brief or {}).get("kind") or clip.get("kind") or "song"
     y_hi, y = load_pair(audio_path)
     duration = len(y) / ANALYSIS_SR
 
@@ -43,7 +49,11 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", e
     ending = structure.ending_shape(e_times, e_db, duration)
 
     lyrics = clip.get("lyrics") or (brief or {}).get("lyrics") or ""
-    lint_res = lint.lint(lyrics, clip.get("style", ""), clip.get("exclude", ""), clip.get("title") or "") if (lyrics or clip.get("style")) else None
+    lint_res = lint.lint(lyrics, clip.get("style", ""), clip.get("exclude", ""), clip.get("title") or "", mode=kind) if (lyrics or clip.get("style")) else None
+    bgm_res = None
+    if kind == "bgm":
+        from .features import bgm as bgm_mod
+        bgm_res = bgm_mod.analyze(y, y_hi)
 
     signals = {
         "copy_paste_repetition": humanness.copy_paste_repetition(sections, y),
@@ -54,26 +64,39 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", e
         "artifact_sheen": humanness.artifact_sheen(y_hi),
         "lyric_cliches": humanness.lyric_cliches(lint_res if lyrics else None),
     }
+    if bgm_res is not None:
+        from .features import bgm as bgm_mod
+        signals["weak_drop"] = bgm_mod.weak_drop(bgm_res)
     heard = None
     if ears:
-        from .ears import listen
+        from .ears import listen, stems as stems_mod
         out_dir = Path(plots_dir).parent if plots_dir else Path(audio_path).parent
-        heard = listen.listen(audio_path, y_hi, sections, clip, brief, out_dir, label)
+        heard = listen.listen(audio_path, y_hi, sections, clip, brief, out_dir, label,
+                              remember=remember, stems_dir=stems_dir)
         signals.update(listen.signals(heard))
+        if bgm_res and bgm_res.get("drop"):
+            bgm_res["stems_arc"] = stems_mod.arc(*heard["_curves"], bgm_res["drop"]["time_s"])
     m = {
         "label": label,
         "clip": {k_: v for k_, v in clip.items() if k_ != "audio_url"},
         "duration_s": round(duration, 1),
         "basics": {**t, **k, **loud, **tone},
         "structure": {"sections": sections, "ending": ending},
-        "humanness": {"score": humanness.combine(signals, weights()), "signals": signals},
+        "kind": kind,
+        "humanness": {"score": humanness.combine(signals, weights(kind)), "signals": signals},
         "lint": lint_res,
     }
+    if bgm_res is not None:
+        m["bgm"] = bgm_res
     if brief:
         m["brief_check"] = compare.against_brief(m, brief)
     if heard:
         curves = heard.pop("_curves")
         m["ears"] = heard
+    if profile:
+        from . import profile as profile_mod
+        m["profile_check"] = profile_mod.compare(m, profile)
+        m["profile_name"] = profile["name"]
 
     if plots_dir:
         plots_dir = Path(plots_dir)
@@ -95,19 +118,25 @@ def find_clips(version_dir):
     return clips
 
 
-def analyze_version(version_dir, ears=False):
+def analyze_version(version_dir, ears=False, kind=None, profile_name=None):
     version_dir = Path(version_dir)
     brief_path = version_dir / "brief.yaml"
     brief = brief_mod.load(brief_path) if brief_path.exists() else None
+    prof = None
+    if profile_name:
+        from . import profile as profile_mod
+        prof = profile_mod.load(profile_name)
+        kind = kind or "bgm"
     clips = find_clips(version_dir)
     if not clips:
         raise SystemExit(f"No audio in {version_dir}. Fetch songs first: python -m lab fetch {version_dir} <link>")
     results = {}
     for label, audio, clip in clips:
         print(f"analyzing {label} ({audio.name})...")
-        results[label] = analyze_clip(audio, clip, brief, version_dir / "plots", label, ears=ears)
+        results[label] = analyze_clip(audio, clip, brief, version_dir / "plots", label, ears=ears,
+                                      kind=kind, profile=prof)
     (version_dir / "metrics.json").write_text(json.dumps(results, indent=2, ensure_ascii=False, default=_json_default))
-    (version_dir / "report.md").write_text(report(results, brief, version_dir.name))
+    (version_dir / "report.md").write_text(report(results, brief, version_dir.name, prof))
     return results
 
 
@@ -117,7 +146,7 @@ def _json_default(o):
     raise TypeError(type(o))
 
 
-def report(results, brief, version):
+def report(results, brief, version, prof=None):
     out = [f"# Analysis - {version}", ""]
     if brief:
         out += [f"Vibe: {brief['vibe']}  ", f"Testing: {', '.join(brief.get('techniques_testing') or []) or '-'}", ""]
@@ -135,7 +164,7 @@ def report(results, brief, version):
             f"LRA {b['loudness_range_lu']} LU | crest {b['crest_factor_db']} dB | brightness {b['brightness_hz']} Hz | "
             f"bandwidth {b['bandwidth_hz']} Hz",
             "",
-            f"### Humanness: {m['humanness']['score']}/100",
+            f"### {'Impact & life' if m.get('kind') == 'bgm' else 'Humanness'}: {m['humanness']['score']}/100",
             "",
         ]
         sigs = sorted(m["humanness"]["signals"].items(), key=lambda kv: -(kv[1]["score"] if kv[1]["score"] is not None else -1))
@@ -143,6 +172,12 @@ def report(results, brief, version):
             score = "n/a " if s["score"] is None else f"{s['score']:.2f}"
             out.append(f"- **{name}** {score} - {s['evidence']}")
         out.append("")
+        if m.get("bgm"):
+            from .features import bgm as bgm_mod
+            out += ["### BGM impact", ""] + bgm_mod.report_lines(m["bgm"]) + [""]
+        if m.get("profile_check") and prof:
+            from . import profile as profile_mod
+            out += ["### Against the reference profile", ""] + profile_mod.report_lines(m["profile_check"], prof) + [""]
         if m.get("brief_check"):
             out += ["### Against the brief", "", "| aspect | target | measured | ok |", "|---|---|---|---|"]
             for r in m["brief_check"]:

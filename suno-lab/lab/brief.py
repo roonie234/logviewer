@@ -27,14 +27,34 @@ Example (sessions/<slug>/brief.yaml):
       [Intro: solo Rhodes, 4 bars]
       ...
     techniques_testing: ["recording-space"]
+
+BGM (instrumental cue) briefs set `kind: bgm`; `sections` is then the arrangement:
+
+    kind: bgm
+    cue_type: mass-hero-entry
+    scene: "slow-motion hero walk out of the smoke, crowd erupting"
+    duration_s: 120
+    instrumental_method: tags        # tags (lyrics box = tags only) | toggle (Suno Instrumental switch)
+    sections:
+      - {tag: "Intro: lone thavil roll over a low drone, 4 bars", energy: low}
+      - {tag: "Build: parai accelerating, riser, sub swells", energy: mid}
+      - {tag: "Silence: 1 beat", energy: silence}
+      - {tag: "Drop: full thavil and 808s, distorted bass, brass stabs, whistle hook", energy: peak}
+      - {tag: "Outro: brass hit, ring out", energy: low}
+      - {tag: "End"}
 """
 
 from pathlib import Path
 
 import yaml
 
-REQUIRED = ["vibe", "title", "genre", "bpm", "sections", "lyrics"]
-ENERGIES = {"low", "mid", "high"}
+REQUIRED = {
+    "song": ["vibe", "title", "genre", "bpm", "sections", "lyrics"],
+    # instrumental cue: `sections` is the arrangement (tags carry the description), lyrics optional
+    "bgm": ["vibe", "title", "genre", "bpm", "sections"],
+}
+ENERGIES = {"silence", "low", "mid", "high", "peak"}
+CUE_TYPES = {"mass-hero-entry", "villain", "action", "emotional"}
 
 
 class BriefError(ValueError):
@@ -47,8 +67,17 @@ def load(path):
     return data
 
 
+def kind(b):
+    """Brief type: 'song' (default) or 'bgm'. (`mode` is the key's major/minor.)"""
+    return (b or {}).get("kind", "song")
+
+
 def validate(b):
-    missing = [k for k in REQUIRED if not b.get(k)]
+    if kind(b) not in REQUIRED:
+        raise BriefError(f"kind must be one of {sorted(REQUIRED)}")
+    if kind(b) == "bgm" and b.get("cue_type") and b["cue_type"] not in CUE_TYPES:
+        raise BriefError(f"cue_type must be one of {sorted(CUE_TYPES)}")
+    missing = [k for k in REQUIRED[kind(b)] if not b.get(k)]
     if missing:
         raise BriefError(f"brief is missing: {', '.join(missing)}")
     try:

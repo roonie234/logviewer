@@ -7,11 +7,12 @@ from ..features.humanness import _ramp
 from . import describe, lyrics, stems, vocals
 
 
-def listen(audio_path, y_hi, sections, clip, brief, out_dir, label, whisper_size="small"):
+def listen(audio_path, y_hi, sections, clip, brief, out_dir, label, whisper_size="small",
+           remember=True, stems_dir=None):
     out_dir = Path(out_dir)
     timings = {}
     t = time.time()
-    st = stems.separate(audio_path, out_dir / "stems", label)
+    st = stems.separate(audio_path, Path(stems_dir) if stems_dir else out_dir / "stems", label)
     timings["stems_s"] = round(time.time() - t, 1)
 
     times, curves, per_section = stems.activity(st, sections)
@@ -33,7 +34,7 @@ def listen(audio_path, y_hi, sections, clip, brief, out_dir, label, whisper_size
 
     t = time.time()
     key = clip.get("id") or f"{out_dir.parent.name}/{out_dir.name}/{label}"
-    res["description"] = describe.describe(y_hi, sections, clip.get("style") or "", key=key)
+    res["description"] = describe.describe(y_hi, sections, clip.get("style") or "", key=key, remember=remember)
     timings["describe_s"] = round(time.time() - t, 1)
     res["timings"] = timings
     res["_curves"] = (times, curves)  # for plotting; not serialised

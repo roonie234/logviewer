@@ -23,6 +23,21 @@ WEIGHTS = {
     "pitch_snapped_vocals": 0.5,  # lower: auto-tune is a deliberate style in some genres
 }
 
+# Instrumental BGM: quantised electronics are the style and there are no vocals, so those
+# signals are off; what matters is contrast and whether the drop lands.
+BGM_WEIGHTS = {
+    "copy_paste_repetition": 0.4,
+    "flat_dynamics": 1.2,
+    "static_arrangement": 0.8,
+    "harmonic_autopilot": 0.3,
+    "grid_rigidity": 0.0,
+    "artifact_sheen": 0.3,
+    "lyric_cliches": 0.0,
+    "slurred_lyrics": 0.0,
+    "pitch_snapped_vocals": 0.0,
+    "weak_drop": 1.5,
+}
+
 
 def _ramp(x, good, bad):
     """0 at `good`, 1 at `bad`, linear between (works for either direction)."""

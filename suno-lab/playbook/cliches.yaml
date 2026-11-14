@@ -94,3 +94,9 @@ genres: [pop, rock, soft rock, indie, folk, country, blues, jazz, soul, funk, r&
   shoegaze, ambient, lo-fi, synthwave, electro-pop, electropop, disco, gospel, classical, orchestral, cinematic,
   art-pop, indie-soul, k-pop, j-pop, bollywood, carnatic, qawwali, ghazal, flamenco, celtic, bluegrass, americana,
   8-bit, chiptune, hyperpop, phonk, grime, neo-soul, trip-hop, industrial]
+
+# Artist names: Suno filters them, and naming them gives you no control. Describe the sound instead.
+artist_names: [anirudh, ravichander, a.r. rahman, ar rahman, a r rahman, ilaiyaraaja, ilayaraja, yuvan shankar raja,
+  yuvan, harris jayaraj, santhosh narayanan, g.v. prakash, gv prakash, devi sri prasad, thaman, s. thaman, ravi basrur,
+  pritam, vishal-shekhar, hans zimmer, john williams, ludwig goransson, taylor swift, drake, the weeknd, billie eilish,
+  ed sheeran, coldplay, beyonce, kanye, eminem, bts, blackpink, arijit singh]

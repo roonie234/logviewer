@@ -13,7 +13,15 @@ KNOWN_SECTIONS = {
     "intro", "verse", "pre-chorus", "prechorus", "chorus", "final chorus", "post-chorus",
     "hook", "bridge", "break", "instrumental break", "instrumental", "solo", "drop", "build",
     "outro", "fade out", "end", "interlude", "refrain",
+    # instrumental / BGM arrangement events
+    "silence", "pause", "stop", "breakdown", "riser", "hit", "impact", "theme", "motif", "climax",
 }
+PAUSE_WORDS = ("silence", "pause", "stop", "breath", "cut", "gap")
+INDIAN_PERCUSSION = ("thavil", "parai", "urumi", "mridangam", "tabla", "dhol", "chenda", "nagara", "kanjira",
+                     "ghatam", "dholak", "konnakol", "nadaswaram", "nadhaswaram", "thappu", "indian percussion",
+                     "folk percussion")
+ELECTRONIC = ("808", "trap", "edm", "synth", "bass drop", "sub bass", "dubstep", "electronic", "distorted bass",
+              "riser", "sidechain")
 
 
 @lru_cache(maxsize=1)
@@ -77,11 +85,51 @@ def find_cliches(text):
     return hits
 
 
-def lint(lyrics="", style="", exclude="", title="", brief=None):
+def _lint_bgm(tags, lyric_lines, style_l, add):
+    kinds = [_section_kind(t) for t in tags]
+    if not tags:
+        add("warn", "explicit-sections", "No arrangement tags. Lay out [Intro: ...] [Build: ...] [Silence: 1 beat] [Drop: ...] [Outro: ...] [End].")
+        return
+    if lyric_lines:
+        add("warn", "instrumental-method", f"Lyrics box has {len(lyric_lines)} line(s) of words; an instrumental BGM should hold only [tags] (words invite vocals).")
+    drops = [i for i, k in enumerate(kinds) if k in ("drop", "climax", "impact")]
+    builds = [i for i, k in enumerate(kinds) if k in ("build", "riser")]
+    if not drops:
+        add("warn", "build-then-drop", "No [Drop] in the arrangement; a mass entry needs one clear moment where everything hits.")
+    elif not builds or builds[0] > drops[0]:
+        add("warn", "build-then-drop", "No [Build] before the first [Drop]; the drop lands harder after a rising build.")
+    if drops:
+        d = drops[0]
+        before = tags[d - 1].lower() if d > 0 else ""
+        if not (any(w in before for w in PAUSE_WORDS) or any(w in tags[d].lower() for w in PAUSE_WORDS)):
+            add("warn", "silence-before-drop", "Nothing cues a pause right before the drop. Try [Silence: 1 beat] or [Build: ... cuts to silence].")
+    if not any(k in ("outro", "end", "fade out") for k in kinds):
+        add("warn", "designed-ending", "No [Outro]/[End]; BGMs often loop or stop mid-phrase without one.")
+    if kinds and kinds[0] == "intro":
+        m = re.search(r"(\d+)\s*bars?", tags[0].lower())
+        if m and int(m.group(1)) > 8:
+            add("info", "short-bgm-intro", f"Intro asks for {m.group(1)} bars; mass entries usually get to the build within 4-8 bars.")
+    if not any(w in style_l for w in INDIAN_PERCUSSION):
+        add("warn", "name-indian-percussion", "Style names no Indian percussion (thavil, parai, urumi, mridangam...); Suno defaults to generic Western drums.")
+    if not any(w in style_l for w in ELECTRONIC):
+        add("info", "hybrid-fusion-anchor", "Style has no electronic element (808s, trap drums, distorted synth bass); the signature sound is folk percussion fused with electronics.")
+    if "instrumental" not in style_l and "no vocals" not in style_l:
+        add("info", "instrumental-method", "Say 'instrumental' or 'no vocals' in the style so Suno doesn't add singing.")
+
+
+def lint(lyrics="", style="", exclude="", title="", brief=None, mode=None):
     findings = []
+    mode = mode or (brief or {}).get("kind", "song")
 
     def add(severity, technique, message):
         findings.append({"severity": severity, "technique": technique, "message": message})
+
+    # ---- artist names (Suno filters them; describe the sound instead)
+    everything = " ".join([style, lyrics, title]).lower()
+    names = [n for n in cliches().get("artist_names", []) if re.search(r"(?<![a-z])%s(?![a-z])" % re.escape(n), everything)]
+    if names:
+        add("error", "describe-dont-name-artists",
+            f"Artist name(s) in the prompt: {', '.join(names)}. Suno filters these; describe the sound (instruments, rhythm, production) instead.")
 
     # ---- limits
     if len(style) > STYLE_LIMIT:
@@ -102,15 +150,21 @@ def lint(lyrics="", style="", exclude="", title="", brief=None):
         add("warn", "focused-style", f"Style mixes {len(genres)} genres ({', '.join(genres)}); pick one anchor + one twist or it blurs into generic.")
     if style and not re.search(r"\b\d{2,3}\s*bpm\b", style_l):
         add("info", "tempo-key-in-style", "No BPM in style; add one to pin the tempo.")
-    if style and not re.search(r"\b(live|room|tape|analog|vintage|recorded|lo-fi|close-mic|demo)\b", style_l):
+    if mode == "song" and style and not re.search(r"\b(live|room|tape|analog|vintage|recorded|lo-fi|close-mic|demo)\b", style_l):
         add("info", "recording-space", "Style says nothing about recording space or era; this often helps it sound captured, not generated.")
     if not exclude.strip():
         add("info", "exclude-the-defaults", "Exclude field is empty; consider excluding default sounds you don't want.")
     if brief and brief.get("bpm") and str(brief["bpm"]) not in style:
         add("warn", "tempo-key-in-style", f"Brief asks for {brief['bpm']} BPM but the style doesn't say it.")
 
-    # ---- lyrics
+    # ---- lyrics / arrangement
     sections = parse_lyrics(lyrics)
+    if mode == "bgm":
+        tags = [x["tag"] for x in sections if x["tag"]] or [x["tag"] for x in (brief or {}).get("sections", [])]
+        lines = [l for x in sections for l in x["lines"]]
+        _lint_bgm(tags, lines, style_l, add)
+        return {"findings": findings, "cliches": [], "cliche_per_100_words": 0.0,
+                "stats": {"sections": tags, "mode": "bgm"}}
     lyric_lines = [l for s in sections for l in s["lines"]]
     words = re.findall(r"[A-Za-z']+", " ".join(lyric_lines))
     hits = find_cliches(" ".join(lyric_lines)) if lyric_lines else []

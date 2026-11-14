@@ -98,3 +98,48 @@ Not: `male vocals`
 Add delivery cues inside sections (whispered, spoken, laughing, breath) and backing vocals in parentheses.  
 Do: `[spoken, almost laughing] ... (ooh, don't)`  
 Not: `no delivery direction`
+
+**describe-the-scene** (bgm)  
+Put the film moment in the style - who, what happens, how the crowd reacts - not just genre words.  
+Do: `scene: slow-motion hero walk out of the smoke, crowd erupting`  
+Not: `mass bgm`
+
+**name-indian-percussion** (bgm)  
+Name the exact Indian percussion; otherwise Suno falls back to generic Western drums.  
+Do: `thavil and parai drums, urumi drone`  
+Not: `heavy drums`
+
+**hybrid-fusion-anchor** (bgm)  
+Anchor on Tamil folk percussion and fuse exactly one electronic layer (808s/trap drums or distorted synth bass).  
+Do: `Tamil folk percussion fused with trap 808s and distorted synth bass`  
+Not: `folk, EDM, dubstep, orchestral, hip hop, rock`
+
+**build-then-drop** (bgm)  
+Write the arrangement as Intro -> Build -> (pause) -> Drop, with what each part adds.  
+Do: `[Build: parai accelerating, riser, sub swells] [Silence: 1 beat] [Drop: everything hits]`  
+Not: `[Intro] [Drop]`
+
+**silence-before-drop** (bgm)  
+Cue a short silence or cut right before the drop - the breath makes the hit land.  
+Do: `[Silence: 1 beat]`  
+Not: `build straight into the drop`
+
+**whistle-lead-hook** (bgm)  
+Give the drop one simple lead hook on a cutting sound - whistle, nadaswaram-like reed, or a distorted synth lead.  
+Do: `whistle lead hook over the drop`  
+Not: `melody`
+
+**offbeat-brass-stabs** (bgm)  
+Ask for short heroic brass stabs on the off-beat in the drop for punch.  
+Do: `heroic brass stabs on the off-beat`  
+Not: `orchestra`
+
+**short-bgm-intro** (bgm)  
+Keep the intro to 4-8 bars so the build starts quickly.  
+Do: `[Intro: lone thavil roll over a low drone, 4 bars]`  
+Not: `[Intro: 16 bars ambient]`
+
+**instrumental-method** (bgm)  
+Test both: Instrumental switch ON (arrangement folded into the style) vs switch OFF with a tags-only lyrics box.  
+Do: `instrumental_method: tags`  
+Not: `words in the lyrics box of an instrumental`

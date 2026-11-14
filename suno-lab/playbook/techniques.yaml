@@ -179,3 +179,75 @@ techniques:
     anti_example: "no delivery direction"
     status: lore
     evidence: []
+  - id: describe-the-scene
+    category: bgm
+    targets: [style]
+    rule: Put the film moment in the style - who, what happens, how the crowd reacts - not just genre words.
+    example: "scene: slow-motion hero walk out of the smoke, crowd erupting"
+    anti_example: "mass bgm"
+    status: lore
+    evidence: []
+  - id: name-indian-percussion
+    category: bgm
+    targets: [style]
+    rule: Name the exact Indian percussion; otherwise Suno falls back to generic Western drums.
+    example: "thavil and parai drums, urumi drone"
+    anti_example: "heavy drums"
+    status: lore
+    evidence: []
+  - id: hybrid-fusion-anchor
+    category: bgm
+    targets: [style, humanness]
+    rule: Anchor on Tamil folk percussion and fuse exactly one electronic layer (808s/trap drums or distorted synth bass).
+    example: "Tamil folk percussion fused with trap 808s and distorted synth bass"
+    anti_example: "folk, EDM, dubstep, orchestral, hip hop, rock"
+    status: lore
+    evidence: []
+  - id: build-then-drop
+    category: bgm
+    targets: [structure]
+    rule: Write the arrangement as Intro -> Build -> (pause) -> Drop, with what each part adds.
+    example: "[Build: parai accelerating, riser, sub swells] [Silence: 1 beat] [Drop: everything hits]"
+    anti_example: "[Intro] [Drop]"
+    status: lore
+    evidence: []
+  - id: silence-before-drop
+    category: bgm
+    targets: [structure, humanness]
+    rule: Cue a short silence or cut right before the drop - the breath makes the hit land.
+    example: "[Silence: 1 beat]"
+    anti_example: "build straight into the drop"
+    status: lore
+    evidence: []
+  - id: whistle-lead-hook
+    category: bgm
+    targets: [style]
+    rule: Give the drop one simple lead hook on a cutting sound - whistle, nadaswaram-like reed, or a distorted synth lead.
+    example: "whistle lead hook over the drop"
+    anti_example: "melody"
+    status: lore
+    evidence: []
+  - id: offbeat-brass-stabs
+    category: bgm
+    targets: [style]
+    rule: Ask for short heroic brass stabs on the off-beat in the drop for punch.
+    example: "heroic brass stabs on the off-beat"
+    anti_example: "orchestra"
+    status: lore
+    evidence: []
+  - id: short-bgm-intro
+    category: bgm
+    targets: [structure]
+    rule: Keep the intro to 4-8 bars so the build starts quickly.
+    example: "[Intro: lone thavil roll over a low drone, 4 bars]"
+    anti_example: "[Intro: 16 bars ambient]"
+    status: lore
+    evidence: []
+  - id: instrumental-method
+    category: bgm
+    targets: [style]
+    rule: "Test both: Instrumental switch ON (arrangement folded into the style) vs switch OFF with a tags-only lyrics box."
+    example: "instrumental_method: tags"
+    anti_example: "words in the lyrics box of an instrumental"
+    status: lore
+    evidence: []
