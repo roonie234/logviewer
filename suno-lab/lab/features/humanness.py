@@ -18,6 +18,9 @@ WEIGHTS = {
     "grid_rigidity": 0.6,
     "artifact_sheen": 0.3,
     "lyric_cliches": 1.0,
+    # from the ears (--ears)
+    "slurred_lyrics": 1.0,
+    "pitch_snapped_vocals": 0.5,  # lower: auto-tune is a deliberate style in some genres
 }
 
 

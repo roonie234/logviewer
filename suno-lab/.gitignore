@@ -6,3 +6,4 @@ sessions/**/*.ogg
 __pycache__/
 .pytest_cache/
 .venv/
+sessions/**/stems/

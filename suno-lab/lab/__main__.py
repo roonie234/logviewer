@@ -3,7 +3,7 @@
   python -m lab fetch    sessions/<song>/v1 <link> [<link> ...]   pull songs (+ the prompt Suno used)
   python -m lab prompt   sessions/<song>/v1                       brief.yaml -> prompt.md (+ lint)
   python -m lab lint     sessions/<song>/v1 | --text "lyrics" --style "..."
-  python -m lab analyze  sessions/<song>/v1                       -> report.md, metrics.json, plots/
+  python -m lab analyze  sessions/<song>/v1 [--ears]              -> report.md, metrics.json, plots/
   python -m lab rate     sessions/<song>/v1 a=4 b=2 [--note "..."] log ratings, update playbook
   python -m lab cheatsheet                                        playbook -> CHEATSHEET.md
 """
@@ -54,7 +54,7 @@ def cmd_lint(a):
 
 
 def cmd_analyze(a):
-    results = analyze.analyze_version(a.version_dir)
+    results = analyze.analyze_version(a.version_dir, ears=a.ears)
     for label, m in results.items():
         print(f"[{label}] humanness {m['humanness']['score']}/100, {m['basics']['bpm']} BPM, "
               f"{m['basics']['key']} {m['basics']['mode']}, {len(m['structure']['sections'])} sections")
@@ -83,7 +83,7 @@ def main(argv=None):
     s = sub.add_parser("fetch"); s.add_argument("version_dir"); s.add_argument("links", nargs="+"); s.set_defaults(fn=cmd_fetch)
     s = sub.add_parser("prompt"); s.add_argument("version_dir"); s.set_defaults(fn=cmd_prompt)
     s = sub.add_parser("lint"); s.add_argument("version_dir", nargs="?"); s.add_argument("--text"); s.add_argument("--style"); s.add_argument("--exclude"); s.set_defaults(fn=cmd_lint)
-    s = sub.add_parser("analyze"); s.add_argument("version_dir"); s.set_defaults(fn=cmd_analyze)
+    s = sub.add_parser("analyze"); s.add_argument("version_dir"); s.add_argument("--ears", action="store_true", help="also run stem separation, sung-lyric transcription, CLAP description, vocal pitch (needs requirements-ears.txt)"); s.set_defaults(fn=cmd_analyze)
     s = sub.add_parser("rate"); s.add_argument("version_dir"); s.add_argument("ratings", nargs="+"); s.add_argument("--note"); s.set_defaults(fn=cmd_rate)
     s = sub.add_parser("cheatsheet"); s.set_defaults(fn=cmd_cheatsheet)
     a = p.parse_args(argv)

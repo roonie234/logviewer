@@ -34,6 +34,24 @@ playbook learns <── you rate 1-5 <── report.md + plots <── fetch + a
 | Structure | detected sections + repeats (A/B/C), intro length, chorus lift, ending (abrupt / fade / clean) |
 | Humanness 0-100 | copy-paste repeats, flat dynamics, static arrangement, 4-chord autopilot, grid-locked timing, hissy top end, lyric clichés |
 
+### The ears (`--ears`)
+`python -m lab analyze sessions/<song>/v1 --ears` adds model-based listening (about a minute per
+song on CPU; first run downloads ~2 GB of models; install `requirements-ears.txt`):
+
+| Ear | Model | What it tells you |
+|---|---|---|
+| Stems | Hybrid Demucs (torchaudio) | which instruments play when; sections where nothing drops out or builds |
+| Lyrics | Whisper small, on the vocal stem | where each written section is actually sung, lines that were slurred, skipped or invented, word confidence |
+| Describe | CLAP (`larger_clap_music_and_speech`) | what it sounds like in words; **which Style-prompt descriptors Suno ignored**; what changes per section |
+| Vocals | pYIN pitch on the vocal stem | auto-tune-like pitch snapping vs natural drift, vibrato, range |
+
+The describe ear judges phrases relative to `playbook/clap_reference.json` (seeded with free
+example tracks); every analyzed song is added to it, so descriptions sharpen as you go.
+The ears add two humanness signals: `slurred_lyrics` and `pitch_snapped_vocals`.
+
+Deliberately not included: AI-music detectors. The goal is songs that sound better to a
+listener, not songs tuned to slip past AI-content labelling.
+
 Humanness signals are heuristics, shown with their evidence, not verdicts. Their weights live in
 `playbook/weights.yaml` (create it to override) and get calibrated against your ratings.
 

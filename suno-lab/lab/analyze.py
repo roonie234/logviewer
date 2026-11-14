@@ -26,7 +26,7 @@ def weights():
     return humanness.WEIGHTS
 
 
-def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a"):
+def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", ears=False):
     clip = clip or {}
     y_hi, y = load_pair(audio_path)
     duration = len(y) / ANALYSIS_SR
@@ -54,6 +54,12 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a"):
         "artifact_sheen": humanness.artifact_sheen(y_hi),
         "lyric_cliches": humanness.lyric_cliches(lint_res if lyrics else None),
     }
+    heard = None
+    if ears:
+        from .ears import listen
+        out_dir = Path(plots_dir).parent if plots_dir else Path(audio_path).parent
+        heard = listen.listen(audio_path, y_hi, sections, clip, brief, out_dir, label)
+        signals.update(listen.signals(heard))
     m = {
         "label": label,
         "clip": {k_: v for k_, v in clip.items() if k_ != "audio_url"},
@@ -65,6 +71,9 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a"):
     }
     if brief:
         m["brief_check"] = compare.against_brief(m, brief)
+    if heard:
+        curves = heard.pop("_curves")
+        m["ears"] = heard
 
     if plots_dir:
         plots_dir = Path(plots_dir)
@@ -72,6 +81,8 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a"):
         title = clip.get("title") or Path(audio_path).stem
         plots.overview(plots_dir / f"{label}_overview.png", y, sections, e_times, e_db, nov, beat_times, f"[{label}] {title}")
         plots.similarity(plots_dir / f"{label}_similarity.png", ssm, beat_times, sections, f"[{label}] {title}")
+        if heard:
+            plots.stems_activity(plots_dir / f"{label}_stems.png", curves[0], curves[1], sections, f"[{label}] {title}")
     return m
 
 
@@ -84,7 +95,7 @@ def find_clips(version_dir):
     return clips
 
 
-def analyze_version(version_dir):
+def analyze_version(version_dir, ears=False):
     version_dir = Path(version_dir)
     brief_path = version_dir / "brief.yaml"
     brief = brief_mod.load(brief_path) if brief_path.exists() else None
@@ -94,7 +105,7 @@ def analyze_version(version_dir):
     results = {}
     for label, audio, clip in clips:
         print(f"analyzing {label} ({audio.name})...")
-        results[label] = analyze_clip(audio, clip, brief, version_dir / "plots", label)
+        results[label] = analyze_clip(audio, clip, brief, version_dir / "plots", label, ears=ears)
     (version_dir / "metrics.json").write_text(json.dumps(results, indent=2, ensure_ascii=False, default=_json_default))
     (version_dir / "report.md").write_text(report(results, brief, version_dir.name))
     return results
@@ -149,5 +160,9 @@ def report(results, brief, version):
                 out += ["Exclude:", "```", c["exclude"], "```"]
         if m.get("lint"):
             out += ["", "Prompt lint:", "```", lint.format_findings(m["lint"]), "```"]
-        out += ["", f"Plots: `plots/{label}_overview.png`, `plots/{label}_similarity.png`", ""]
+        if m.get("ears"):
+            from .ears import listen
+            out += [""] + listen.report_lines(m["ears"])
+        stems_plot = f", `plots/{label}_stems.png`" if m.get("ears") else ""
+        out += ["", f"Plots: `plots/{label}_overview.png`, `plots/{label}_similarity.png`{stems_plot}", ""]
     return "\n".join(out)

@@ -1,0 +1,8 @@
+# Optional "ears" (python -m lab analyze <dir> --ears). CPU is fine; first run downloads ~2 GB of models.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.4
+torchaudio>=2.4          # Hybrid Demucs stem separation (weights hosted by PyTorch)
+faster-whisper>=1.0      # sung-lyric transcription
+# transformers 5.x and the laion/larger_clap_music checkpoint both produced collapsed text
+# embeddings in testing; laion/larger_clap_music_and_speech on 4.x works.
+transformers>=4.45,<5

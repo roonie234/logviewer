@@ -1,0 +1,123 @@
+# Vocabulary for the CLAP "describe what you hear" ear.
+# The song is compared with every phrase; the best matches become the description,
+# and the bank is the baseline for judging whether a style-prompt descriptor was heard.
+# Add phrases freely; short concrete phrases work best.
+
+genre:
+  - pop song
+  - rock song
+  - soft rock ballad
+  - indie rock
+  - folk song with acoustic guitar
+  - country music
+  - blues
+  - jazz
+  - soul music
+  - funk
+  - r&b
+  - hip hop
+  - trap beat
+  - house music
+  - techno
+  - drum and bass
+  - dubstep
+  - reggae
+  - afrobeat
+  - latin music
+  - bossa nova
+  - heavy metal
+  - punk rock
+  - ambient music
+  - lo-fi hip hop
+  - synthwave
+  - classical orchestral music
+  - cinematic film score
+  - gospel choir
+  - indian classical music
+  - bollywood song
+  - k-pop
+  - electronic dance music
+  - singer-songwriter
+
+instruments:
+  - acoustic guitar
+  - electric guitar
+  - distorted electric guitar
+  - slide guitar
+  - banjo
+  - piano
+  - electric piano
+  - organ
+  - synthesizer
+  - synth pads
+  - strings section
+  - violin
+  - cello
+  - brass section
+  - saxophone
+  - trumpet
+  - flute
+  - harmonica
+  - accordion
+  - sitar
+  - tabla
+  - upright bass
+  - electric bass
+  - sub bass
+  - live drums
+  - brushed drums
+  - drum machine
+  - 808 drums
+  - hand percussion
+  - handclaps
+  - choir
+
+vocals:
+  - male vocals
+  - female vocals
+  - deep male voice
+  - high female voice
+  - raspy voice
+  - breathy whispered vocals
+  - powerful belting vocals
+  - falsetto
+  - rap vocals
+  - spoken word
+  - choir harmonies
+  - auto-tuned vocals
+  - instrumental music with no vocals
+
+mood:
+  - happy upbeat mood
+  - sad melancholic mood
+  - romantic
+  - angry aggressive
+  - calm relaxing
+  - dark and tense
+  - hopeful and warm
+  - nostalgic
+  - playful
+  - epic and grand
+  - dreamy
+
+production:
+  - live band recorded in a room
+  - polished studio pop production
+  - lo-fi tape recording
+  - vintage 1970s recording
+  - 1980s production
+  - modern radio production
+  - heavily compressed loud mix
+  - sparse minimal arrangement
+  - dense wall of sound
+  - lots of reverb
+  - dry close-mic recording
+  - home demo recording
+  - live concert recording
+
+energy:
+  - slow tempo
+  - fast tempo
+  - quiet and soft
+  - loud and energetic
+  - building intensity

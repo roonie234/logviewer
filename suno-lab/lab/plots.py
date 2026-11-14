@@ -61,3 +61,22 @@ def similarity(path, ssm, beat_times, sections, title):
     fig.tight_layout()
     fig.savefig(path, dpi=80)
     plt.close(fig)
+
+
+def stems_activity(path, times, curves, sections, title):
+    names = list(curves)
+    M = np.array([curves[n][:len(times)] for n in names])
+    fig, ax = plt.subplots(figsize=(14, 3.2))
+    ax.imshow(M, aspect="auto", origin="lower", cmap="magma", vmin=-40, vmax=0,
+              extent=[0, times[-1] if len(times) else 1, -0.5, len(names) - 0.5])
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names)
+    for s in sections:
+        ax.axvline(s["start"], color="#00e5ff", lw=1.2)
+        ax.text(s["start"] + 0.5, len(names) - 0.55, s["label"], color="black", fontsize=8, va="top",
+                bbox={"facecolor": "#00e5ff", "edgecolor": "none", "pad": 1})
+    ax.set_xlabel("time (s)")
+    ax.set_title(f"{title} - which instruments play when (bright = loud, relative to each stem's peak)")
+    fig.tight_layout()
+    fig.savefig(path, dpi=80)
+    plt.close(fig)
