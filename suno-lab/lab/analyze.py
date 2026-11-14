@@ -53,7 +53,7 @@ def analyze_clip(audio_path, clip=None, brief=None, plots_dir=None, label="a", e
     bgm_res = None
     if kind == "bgm":
         from .features import bgm as bgm_mod
-        bgm_res = bgm_mod.analyze(y, y_hi)
+        bgm_res = bgm_mod.analyze(y, y_hi, boundaries=[s_["start"] for s_ in sections[1:]])
 
     signals = {
         "copy_paste_repetition": humanness.copy_paste_repetition(sections, y),
