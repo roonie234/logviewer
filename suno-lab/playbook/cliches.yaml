@@ -1,0 +1,96 @@
+# Phrases that make lyrics and style prompts read as machine-written.
+# weight: how strongly it signals "generic AI lyric" (1 = mild, 3 = dead giveaway).
+# Matching is case-insensitive on whole words / phrases. Add to this as we learn.
+
+lyric_cliches:
+  # dead giveaways
+  - {phrase: "neon", weight: 3}
+  - {phrase: "echoes", weight: 3}
+  - {phrase: "echoes of", weight: 3}
+  - {phrase: "shadows dance", weight: 3}
+  - {phrase: "tapestry", weight: 3}
+  - {phrase: "symphony of", weight: 3}
+  - {phrase: "kaleidoscope", weight: 3}
+  - {phrase: "ignite", weight: 3}
+  - {phrase: "ignite the", weight: 3}
+  - {phrase: "embers", weight: 3}
+  - {phrase: "we rise", weight: 3}
+  - {phrase: "rise above", weight: 3}
+  - {phrase: "unbreakable", weight: 3}
+  - {phrase: "whispers in the", weight: 3}
+  - {phrase: "ethereal", weight: 3}
+  - {phrase: "labyrinth", weight: 3}
+  - {phrase: "soul on fire", weight: 3}
+  - {phrase: "fire within", weight: 3}
+  - {phrase: "stars align", weight: 3}
+  - {phrase: "electric dreams", weight: 3}
+  - {phrase: "neon lights", weight: 3}
+  - {phrase: "city lights", weight: 2}
+  - {phrase: "midnight city", weight: 3}
+  # common filler imagery
+  - {phrase: "shadows", weight: 2}
+  - {phrase: "whispers", weight: 2}
+  - {phrase: "silhouette", weight: 2}
+  - {phrase: "shattered", weight: 2}
+  - {phrase: "hollow", weight: 2}
+  - {phrase: "velvet", weight: 2}
+  - {phrase: "crystal", weight: 2}
+  - {phrase: "heartbeat", weight: 2}
+  - {phrase: "endless night", weight: 2}
+  - {phrase: "broken wings", weight: 2}
+  - {phrase: "chasing dreams", weight: 2}
+  - {phrase: "chasing the light", weight: 2}
+  - {phrase: "lost in the moment", weight: 2}
+  - {phrase: "light up the sky", weight: 2}
+  - {phrase: "through the storm", weight: 2}
+  - {phrase: "fading away", weight: 2}
+  - {phrase: "wings to fly", weight: 2}
+  - {phrase: "reach for the stars", weight: 2}
+  - {phrase: "in the darkness", weight: 2}
+  - {phrase: "burning bright", weight: 2}
+  - {phrase: "dance in the rain", weight: 2}
+  - {phrase: "set me free", weight: 1}
+  - {phrase: "never let go", weight: 1}
+  - {phrase: "take my hand", weight: 1}
+  - {phrase: "one more time", weight: 1}
+  - {phrase: "journey", weight: 1}
+  - {phrase: "destiny", weight: 2}
+  - {phrase: "eternity", weight: 1}
+  - {phrase: "forevermore", weight: 2}
+  - {phrase: "the night is young", weight: 2}
+  - {phrase: "heart of gold", weight: 2}
+  - {phrase: "cosmic", weight: 2}
+  - {phrase: "starlight", weight: 2}
+  - {phrase: "moonlight", weight: 1}
+  - {phrase: "the edge of", weight: 1}
+
+# Words that add nothing to a Style prompt: they describe quality or reaction,
+# not sound. Replace them with instruments, playing style, production, era, space.
+generic_style_words:
+  - epic
+  - emotional
+  - catchy
+  - beautiful
+  - amazing
+  - powerful
+  - uplifting
+  - banger
+  - viral
+  - high quality
+  - masterpiece
+  - professional
+  - best
+  - perfect
+  - awesome
+  - incredible
+  - stunning
+  - vibes
+  - modern
+
+# Genre names, used to spot genre pile-ups in a Style prompt (focused-style).
+genres: [pop, rock, soft rock, indie, folk, country, blues, jazz, soul, funk, r&b, hip hop, hip-hop, rap, trap, drill,
+  house, deep-house, techno, trance, edm, dubstep, drum-and-bass, drum and bass, dnb, riddim, garage, dub, reggae,
+  reggaeton, afrobeat, afrobeats, amapiano, dancehall, latin, salsa, bossa nova, samba, metal, punk, emo, grunge,
+  shoegaze, ambient, lo-fi, synthwave, electro-pop, electropop, disco, gospel, classical, orchestral, cinematic,
+  art-pop, indie-soul, k-pop, j-pop, bollywood, carnatic, qawwali, ghazal, flamenco, celtic, bluegrass, americana,
+  8-bit, chiptune, hyperpop, phonk, grime, neo-soul, trip-hop, industrial]

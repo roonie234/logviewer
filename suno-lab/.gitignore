@@ -1,0 +1,8 @@
+# Audio stays local (large, and re-fetchable from the song link). Reports, metrics and plots are kept.
+sessions/**/*.m4a
+sessions/**/*.mp3
+sessions/**/*.wav
+sessions/**/*.ogg
+__pycache__/
+.pytest_cache/
+.venv/

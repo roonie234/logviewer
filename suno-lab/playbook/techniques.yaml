@@ -1,0 +1,181 @@
+# The playbook. Every technique is a hypothesis until our own songs prove it.
+# status: lore (untested) | testing | proven | busted
+# evidence: appended automatically by `python -m lab rate ...`
+#   each entry: {song, version, rating_delta, humanness_delta}
+# targets: which problem it is meant to fix (style | structure | humanness | lyrics)
+
+techniques:
+  # ---------------- Style field ----------------
+  - id: sound-not-adjectives
+    category: style
+    targets: [humanness, style]
+    rule: Describe sounds, instruments and playing style instead of quality or mood adjectives.
+    example: "brushed snare, upright bass walking, felt piano with pedal noise"
+    anti_example: "epic emotional beautiful song"
+    status: lore
+    evidence: []
+
+  - id: recording-space
+    category: style
+    targets: [humanness]
+    rule: Name the recording conditions - room, era, gear, imperfections - so the mix sounds captured, not generated.
+    example: "recorded live in a small wooden room, 1970s tape, room mics, slight hiss"
+    anti_example: "high quality professional production"
+    status: lore
+    evidence: []
+
+  - id: loose-human-feel
+    category: style
+    targets: [humanness]
+    rule: Ask for human timing explicitly.
+    example: "live drummer, loose swung 16ths, laid-back behind the beat"
+    anti_example: "tight drums"
+    status: lore
+    evidence: []
+
+  - id: focused-style
+    category: style
+    targets: [style, humanness]
+    rule: Keep the style to one genre anchor plus at most one unexpected twist, 5-9 strong descriptors. Overloaded style lists blur into generic mush.
+    example: "Delta blues, slide guitar, stomp box, cracked baritone voice, with a dub-reggae bass undertow"
+    anti_example: "art-pop, indie-soul, deep-house, 8-bit, trap, drum-and-bass, riddim, electro-pop, lo-fi"
+    status: lore
+    evidence: []
+
+  - id: tempo-key-in-style
+    category: style
+    targets: [style]
+    rule: State BPM and key/mode in the style field to pin tempo and mood.
+    example: "78 BPM, D minor"
+    anti_example: "slow, sad"
+    status: lore
+    evidence: []
+
+  - id: describe-dont-name-artists
+    category: style
+    targets: [style]
+    rule: Describe an artist's sound instead of naming them (names get filtered and you lose control anyway).
+    example: "whispered close-mic female vocal, sparse nylon guitar, bossa nova restraint"
+    anti_example: "sounds like <famous artist>"
+    status: lore
+    evidence: []
+
+  - id: energy-arc-in-style
+    category: style
+    targets: [structure, humanness]
+    rule: Put the dynamic arc into the style - where it is sparse and where it opens up.
+    example: "sparse verses, chorus opens up with full band, stripped-down bridge, quiet last chorus"
+    anti_example: "energetic throughout"
+    status: lore
+    evidence: []
+
+  - id: exclude-the-defaults
+    category: exclude
+    targets: [humanness, style]
+    rule: Use the Exclude field for Suno's default sounds you do not want.
+    example: "Exclude: auto-tune, EDM drop, generic pop, synth pads, reverb wash"
+    anti_example: "(empty exclude)"
+    status: lore
+    evidence: []
+
+  # ---------------- Structure ----------------
+  - id: explicit-sections
+    category: structure
+    targets: [structure]
+    rule: Tag every section explicitly in the lyrics in the order you want.
+    example: "[Intro] [Verse 1] [Pre-Chorus] [Chorus] [Verse 2] [Chorus] [Bridge] [Final Chorus] [Outro] [End]"
+    anti_example: "lyrics with no tags"
+    status: lore
+    evidence: []
+
+  - id: short-described-intro
+    category: structure
+    targets: [structure]
+    rule: Keep intros short and say what plays in them, so Suno does not ramble for 30 seconds.
+    example: "[Intro: solo piano, 4 bars]"
+    anti_example: "[Intro]"
+    status: lore
+    evidence: []
+
+  - id: designed-ending
+    category: structure
+    targets: [structure]
+    rule: End with an outro that says how it ends, then [End], to avoid abrupt cut-offs.
+    example: "[Outro: band drops out, voice and guitar only, ring out] ... [End]"
+    anti_example: "lyrics just stop after the last chorus"
+    status: lore
+    evidence: []
+
+  - id: vary-the-repeat
+    category: structure
+    targets: [humanness, structure]
+    rule: Never repeat a chorus word for word. Change a line, the arrangement cue, or the delivery on each return.
+    example: "[Final Chorus: half-time, just voice and claps] with one rewritten line"
+    anti_example: "same chorus pasted three times"
+    status: lore
+    evidence: []
+
+  - id: instrumental-moment
+    category: structure
+    targets: [humanness, structure]
+    rule: Give the band a named instrumental moment.
+    example: "[Instrumental Break: harmonica solo, slightly out of breath]"
+    anti_example: "vocals wall to wall"
+    status: lore
+    evidence: []
+
+  # ---------------- Lyrics ----------------
+  - id: concrete-specifics
+    category: lyrics
+    targets: [lyrics, humanness]
+    rule: Use concrete, specific details - names, places, objects, times - instead of abstract feelings.
+    example: "your mum's blue Corolla, the dent from the parking post"
+    anti_example: "memories of you burning in my heart"
+    status: lore
+    evidence: []
+
+  - id: uneven-lines
+    category: lyrics
+    targets: [humanness, lyrics]
+    rule: Vary line lengths and break the rhyme pattern sometimes; uniform lines with perfect end rhymes sound templated.
+    example: "a 4-syllable line after a 12-syllable one; slant rhymes (home / alone / phone booth)"
+    anti_example: "every line 8 syllables, AABB perfect rhymes"
+    status: lore
+    evidence: []
+
+  - id: conversational-voice
+    category: lyrics
+    targets: [lyrics, humanness]
+    rule: Write lines the way a person would actually say them - contractions, asides, unfinished thoughts.
+    example: "I didn't call. Well - I did, I hung up."
+    anti_example: "I shall never forget the love we shared"
+    status: lore
+    evidence: []
+
+  - id: one-strange-image
+    category: lyrics
+    targets: [lyrics, humanness]
+    rule: Put one surprising, slightly odd image in each verse.
+    example: "the fridge hums in the key of your leaving"
+    anti_example: "tears fall like rain"
+    status: lore
+    evidence: []
+
+  # ---------------- Vocals / performance ----------------
+  - id: voice-character
+    category: vocals
+    targets: [humanness]
+    rule: Describe the singer as a person - age, texture, mic distance, attitude.
+    example: "raspy 50-year-old male baritone, close-mic, tired but warm"
+    anti_example: "male vocals"
+    status: lore
+    evidence: []
+
+  - id: performance-cues
+    category: vocals
+    targets: [humanness]
+    rule: Add delivery cues inside sections (whispered, spoken, laughing, breath) and backing vocals in parentheses.
+    example: "[spoken, almost laughing] ... (ooh, don't)"
+    anti_example: "no delivery direction"
+    status: lore
+    evidence: []

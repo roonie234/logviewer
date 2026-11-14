@@ -1,0 +1,10 @@
+# Python 3.10+. Also needs ffmpeg on PATH (decodes Suno's m4a/opus and mp3 streams).
+librosa>=0.10
+numpy>=1.24
+scipy>=1.10
+soundfile>=0.12
+pyloudnorm>=0.1.1
+matplotlib>=3.7
+pyyaml>=6.0
+httpx>=0.24
+pytest>=7

@@ -1,0 +1,83 @@
+# EXAMPLE session - shows what Claude produces from one vibe line.
+vibe: "late-night drive after a breakup, but hopeful"
+direction: |
+  Warm, slightly worn soft rock with West-African guitar picking. Verses are half-spoken and close,
+  the chorus finally breathes out. Story: driving past the exit to her place, deciding not to take it.
+title: "Exit 14"
+genre: "soft rock"
+twist: "Afrobeat-style clean guitar picking"
+bpm: 92
+key: "A"
+mode: "major"
+instrumentation:
+  - "clean electric guitar, interlocking picked lines"
+  - "Rhodes piano"
+  - "live drums with brushes, loose"
+  - "round fingered bass"
+production: "recorded live in a small room, 1980s tape, slight hiss, room mics"
+vocals: "husky male tenor, close-mic, tired but warm, slightly behind the beat"
+energy_arc: "sparse verses, chorus opens up, stripped bridge, quiet final chorus"
+sections:
+  - {tag: "Intro: solo Rhodes, 4 bars", energy: low}
+  - {tag: "Verse 1", energy: low}
+  - {tag: "Pre-Chorus", energy: mid}
+  - {tag: "Chorus", energy: high}
+  - {tag: "Verse 2", energy: low}
+  - {tag: "Chorus", energy: high}
+  - {tag: "Instrumental Break: guitar picking solo, a bit loose", energy: mid}
+  - {tag: "Bridge: band drops out, spoken", energy: low}
+  - {tag: "Final Chorus: half-time, just voice, Rhodes and claps", energy: mid}
+  - {tag: "Outro: guitar rings out, tape hiss", energy: low}
+  - {tag: "End"}
+story: "Driving home at 2am, passing the exit to an ex's flat, the radio, the decision not to turn."
+lyric_angle: "Second person, tiny concrete details, no big statements; the hope is in what he doesn't do."
+exclude: ["auto-tune", "EDM drop", "synth pads", "trap hi-hats", "stadium reverb"]
+techniques_testing: ["recording-space", "vary-the-repeat"]
+lyrics: |
+  [Intro: solo Rhodes, 4 bars]
+
+  [Verse 1]
+  Petrol station coffee, gone cold by the bridge
+  Your hair tie's still looped on the gear stick
+  The radio's doing that thing again -
+  playing the song from the wedding we left early
+
+  [Pre-Chorus]
+  Indicator ticking
+  like it's asking me twice
+
+  [Chorus]
+  Exit fourteen, I know every turn
+  Left at the bakery, right past the church
+  I could be there before the kettle's done
+  Exit fourteen... I keep driving on
+
+  [Verse 2]
+  Your mum still texts me on Sundays
+  pictures of the dog in that ridiculous coat
+  I laughed out loud at a red light
+  first time in a month, nobody heard it
+
+  [Chorus]
+  Exit fourteen, I know every turn
+  Left at the bakery, right past the church
+  I could be there before the kettle's done
+  Exit fourteen... I keep driving on
+
+  [Instrumental Break: guitar picking solo, a bit loose]
+
+  [Bridge: band drops out, spoken]
+  It's not that I stopped.
+  It's that the road kept going,
+  and for once I let it.
+
+  [Final Chorus: half-time, just voice, Rhodes and claps]
+  Exit fourteen, I still know every turn
+  but the bakery's shut and so is the church
+  Somewhere a kettle boils for someone else
+  Exit fourteen... and I'm alright with that
+
+  [Outro: guitar rings out, tape hiss]
+  (keep driving on)
+
+  [End]
